@@ -68,7 +68,7 @@ class Camera:
     * Example Call : getArucoID()
     '''
     def getArucoID(self):
-        vs = VideoStream().start()
+        vs = VideoStream(usePiCamera = True).start()
         time.sleep(2)
         foundID = False #flag set when ID is detected
         ID = 0 #stores the detected ID
