@@ -3,7 +3,7 @@
 * Author List : Ebey Abraham
 * Filename : picam.py
 * Theme : Antbot
-* Functions : 
+* Functions : detectAruco(img), markAruco(img,aruco_list), getArucoID()
 * Global Variables : NONE
 '''
 from imutils.video.videostream import VideoStream
@@ -12,6 +12,9 @@ import cv2
 import cv2.aruco as aruco
 import numpy as np
 import time
+import csv
+import pandas as pd
+import numpy as np
 
 class Camera:
     def __init__(self):
@@ -70,50 +73,30 @@ class Camera:
     def getArucoID(self):
         ids = []
         vs = VideoStream(usePiCamera = True).start()
-        time.sleep(2)
+        time.sleep(1)
         while len(ids) < 4:
-            foundID = False #flag set when ID is detected
             ID = 0 #stores the detected ID
-            #while not foundID:
             frame = vs.read()
-            #frame = imutils.resize(frame, width = 400)
             aruco_list = self.detectAruco(frame)
             if len(aruco_list):
                 foundID = True
                 ID = list(aruco_list.keys())
                 ID = ID[0]
                 frame = self.markAruco(frame,aruco_list)
+            #check that the detected ID is not repeated and add to the list of ids
             if ID > 0 and ID not in ids:
                 ids.append(ID)
                 print("ID Detected: {}".format(ID))
-        #cv2.imshow("Frame", frame)
-        #key = cv2.waitKey(1) & 0xFF
-        #if key == ord('q'):
-        #    break
-        #cv2.destroyAllWindows()
-        #vs.stop()
-        #return ID
-    
-    '''
-    * Function Name : detectColor
-    * Input : NONE
-    * Output : returns the color of detected box
-    * Logic : -
-    * Example Call : detectColor()
-    '''    
-    def detectColor():
-        vs.VideoStream().start()
-        time.sleep(2)
-        foundColor = False
-        color = None
-        while not foundColor:
-            '''
-            add logic here
-            '''
-            pass
         vs.stop()
-        return color
 
+        #storing data in  csv file        
+        with open("eYRC#AB#117.csv", w) as f:
+            writer = csv.writer(f)
+            #the SIMS are detected in the order 1,2,3,0 so store them in the sorted order
+            writer.writerow(["SIM 0",ids[3]])
+            writer.writerow(["SIM 1",ids[0]])
+            writer.writerow(["SIM 2",ids[1]])
+            writer.writerow(["SIM 3",ids[2]])
 
 if __name__ == "__main__":
     cam = Camera()

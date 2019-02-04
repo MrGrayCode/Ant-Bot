@@ -24,7 +24,8 @@ class Bot:
 
     '''
     * Function Name : forward
-    * Input : duty_cycle (optional) -> the duty cycle of PWM output
+    * Input : left_dc (optional) -> the duty cycle of left motor's PWM output
+              right_dc (optional) -> the duty cycle of right motor's PWM output
     * Output : Moves bot forward
     * Logic : move left and right motors in same direction
     * Example Call : forward(25)
@@ -40,7 +41,8 @@ class Bot:
     
     '''
     * Function Name : backward
-    * Input : duty_cycle (optional) -> the duty cycle of PWM output
+    * Input : left_dc (optional) -> the duty cycle of left motor's PWM output
+              right_dc (optional) -> the duty cycle of right motor's PWM output
     * Output : Moves bot backward
     * Logic : move left and right motors in same direction
     * Example Call : backward(25)
@@ -56,7 +58,8 @@ class Bot:
 
     '''
     * Function Name : left
-    * Input : duty_cycle (optional) -> the duty cycle of PWM output
+    * Input : left_dc (optional) -> the duty cycle of left motor's PWM output
+              right_dc (optional) -> the duty cycle of right motor's PWM output
     * Output : rotates the bot anti-clockwise
     * Logic : move left and right motors in opposite direction
     * Example Call : left(25)
@@ -72,7 +75,8 @@ class Bot:
 
     '''
     * Function Name : right
-    * Input : duty_cycle (optional) -> the duty cycle of PWM output
+    * Input : left_dc (optional) -> the duty cycle of left motor's PWM output
+              right_dc (optional) -> the duty cycle of right motor's PWM output
     * Output : Rotates the bot clockwise
     * Logic : move left and right motors in opposite direction
     * Example Call : right(25)
