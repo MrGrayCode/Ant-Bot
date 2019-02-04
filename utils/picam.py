@@ -68,11 +68,13 @@ class Camera:
     * Example Call : getArucoID()
     '''
     def getArucoID(self):
+        ids = []
         vs = VideoStream(usePiCamera = True).start()
         time.sleep(2)
-        foundID = False #flag set when ID is detected
-        ID = 0 #stores the detected ID
-        while not foundID:
+        while len(ids) < 4:
+            foundID = False #flag set when ID is detected
+            ID = 0 #stores the detected ID
+            #while not foundID:
             frame = vs.read()
             #frame = imutils.resize(frame, width = 400)
             aruco_list = self.detectAruco(frame)
@@ -80,15 +82,17 @@ class Camera:
                 foundID = True
                 ID = list(aruco_list.keys())
                 ID = ID[0]
-                print("ID Detected: {}".format(ID))
                 frame = self.markAruco(frame,aruco_list)
-            cv2.imshow("Frame", frame)
-            key = cv2.waitKey(1) & 0xFF
-            if key == ord('q'):
-                break
-        cv2.destroyAllWindows()
-        vs.stop()
-        return ID
+            if ID > 0 and ID not in ids:
+                ids.append(ID)
+                print("ID Detected: {}".format(ID))
+        #cv2.imshow("Frame", frame)
+        #key = cv2.waitKey(1) & 0xFF
+        #if key == ord('q'):
+        #    break
+        #cv2.destroyAllWindows()
+        #vs.stop()
+        #return ID
     
     '''
     * Function Name : detectColor
