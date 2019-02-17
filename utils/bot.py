@@ -107,4 +107,4 @@ class Bot:
 if __name__ == "__main__":
     bot = Bot()
     while True:
-        bot.forward()
+        bot.forward(10,50)

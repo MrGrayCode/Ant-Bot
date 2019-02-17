@@ -3,22 +3,62 @@
 * Author List : Ebey Abraham
 * Filename : line_sensor.ino
 * Theme : Antbot
-* Functions : 
-* Global Variables : pin1 -> analog pin for left sensor
-                     pin2 -> analog pin for center sensor
-                     pin3 -> analog pin for right sensor
-                     left -> stores value of left sensor
-                     right -> stores value of center sensor
-                     center -> stores value of right sensor
+* Functions : lineSensor()
+* Global Variables : left_pin -> analog pin for left sensor
+                     center_pin -> analog pin for center sensor
+                     right_pin -> analog pin for right sensor
+                     left_val -> stores value of left sensor
+                     right_val -> stores value of center sensor
+                     center_val -> stores value of right sensor
                      thresh -> threshold of line sensor
+                     kp ->
+                     kd ->
 */
-int pin1 = 0;
-int pin2 = 1;
-int pin3 = 2;
-int left = 0;
-int center = 0;
-int right = 0;
-int thresh = 140;
+
+int left_pin = 2;
+int center_pin = 1;
+int right_pin = 0;
+int left_val = 0;
+int center_val = 0;
+int right_val = 0;
+int thresh = 160;
+int setpoint = 500;
+float position;
+float error = 0;
+float lastError = 0;
+float kp = 0.02;
+float kd = 0.0;
+float motorSpeed = 0;
+int rightBaseSpeed = 80;
+int leftBaseSpeed = 80;
+int rightMotorSpeed =0;
+int leftMotorSpeed = 0;
+
+int checkPosition(int val)
+{
+  int res = 0;
+  if(val>= thresh)
+  {
+    res = 1;
+  }
+  return res;
+}
+
+void printSensorValues()
+{
+  Serial.print(left_val);
+  Serial.print(",");
+  Serial.print(center_val);
+  Serial.print(",");
+  Serial.println(right_val);
+}
+
+void printMotorSpeeds()
+{
+  Serial.print(leftMotorSpeed);
+  Serial.print(",");
+  Serial.println(rightMotorSpeed);
+}
 
 /*
 * Function Name : lineSensor
@@ -29,40 +69,29 @@ int thresh = 140;
 */
 void lineSensor()
 {
-  left = analogRead(pin1);
-  center = analogRead(pin2);
-  right = analogRead(pin3);
-  /*
-  Serial.print(left);
-  Serial.print(",");
-  Serial.print(center);
-  Serial.print(",");
-  Serial.println(right);
-  */
+  left_val = analogRead(left_pin);
+  center_val = analogRead(center_pin);
+  right_val = analogRead(right_pin);
+  left_val = checkPosition(left_val);
+  center_val = checkPosition(center_val);
+  right_val = checkPosition(right_val);
   
-  if(left <= thresh && center <= thresh && right >= thresh) //soft right
+  //printSensorValues();
+  
+  if(left_val && center_val && right_val)
   {
-    Serial.println("1");
+    Serial.println("N");
   }
-  else if(left <= thresh && center >= thresh && right >= thresh) //soft right
+  else
   {
-    Serial.println("2");
-  }
-  else if(left <= thresh && center >= thresh && right <= thresh) //straight
-  {
-    Serial.println("3");
-  }
-  else if(left >= thresh && center <= thresh && right <= thresh)  //soft left
-  {
-    Serial.println("4");
-  }
-  else if(left >= thresh && center >= thresh && right <= thresh)  //soft left
-  {
-    Serial.println("5");
-  }
-  else if(left >= thresh && center >= thresh && right >= thresh) //stop
-  {
-    Serial.println("6");
+    position = (0*left_val + 500*center_val + 1000*right_val)/(left_val + center_val + right_val);
+    //Serial.println(position);
+    error = setpoint - position;
+    motorSpeed = kp * error + kd * (error - lastError);
+    lastError = error;
+    rightMotorSpeed = rightBaseSpeed + motorSpeed;
+    leftMotorSpeed = leftBaseSpeed - motorSpeed;
+    printMotorSpeeds();
   }
 }
 
@@ -74,5 +103,5 @@ void setup()
 void loop() 
 {
   lineSensor();
-  delay(10);
+  delay(100);
 }
