@@ -19,8 +19,8 @@ class Bot:
             GPIO.output(motor_pin,GPIO.LOW)
         self.left_motor = GPIO.PWM(self.motor_pins[2],100)
         self.right_motor = GPIO.PWM(self.motor_pins[5],100)
-        self.left_motor.start(50)
-        self.right_motor.start(50)
+        self.left_motor.start(100)
+        self.right_motor.start(100)
 
     '''
     * Function Name : forward
