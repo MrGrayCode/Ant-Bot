@@ -1,9 +1,9 @@
 '''
 * Team ID : 117
-* Author List : Ebey Abraham
+* Author List : Ebey Abraham, Akshatha Nayak
 * Filename : picam.py
 * Theme : Antbot
-* Functions : detectAruco(img), markAruco(img,aruco_list), getArucoID()
+* Functions : detectAruco(img), markAruco(img,aruco_list), getArucoID(), getArucoBits()
 * Global Variables : NONE
 '''
 from imutils.video.videostream import VideoStream
@@ -18,15 +18,15 @@ import numpy as np
 
 class Camera:
     def __init__(self):
-        pass
-    
+        self.IDs = []
+
     '''
     * Function Name : detectAruco
     * Input : img-> image to detect aruco marker from
     * Output : returns the detected aruco id and its corner as a dictionary
     * Logic : check that the image frame has only one aruco marker and return the id and corner list as a key value pair
     * Example Call : detectAruco(img)
-    '''    
+    '''
     def detectAruco(self,img):
         gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
         #create aruco dictionary of 7x7 bits and 1000 combinations
@@ -39,7 +39,7 @@ class Camera:
         if len(corners) == 1:
             aruco_list[ids[0][0]] = corners[0][0]
         return aruco_list
-    
+
     '''
     * Function Name : markAruco
     * Input : img-> image to detect aruco marker from
@@ -71,7 +71,6 @@ class Camera:
     * Example Call : getArucoID()
     '''
     def getArucoID(self):
-        ids = []
         vs = VideoStream(usePiCamera = True).start()
         time.sleep(1)
         while len(ids) < 4:
@@ -86,10 +85,11 @@ class Camera:
             #check that the detected ID is not repeated and add to the list of ids
             if ID > 0 and ID not in ids:
                 ids.append(ID)
+                IDs.append(bin(ID)[2:]) #store ID in binary format
                 print("ID Detected: {}".format(ID))
         vs.stop()
 
-        #storing data in  csv file        
+        #storing data in  csv file
         with open("eYRC#AB#117.csv", w) as f:
             writer = csv.writer(f)
             #the SIMS are detected in the order 1,2,3,0 so store them in the sorted order
