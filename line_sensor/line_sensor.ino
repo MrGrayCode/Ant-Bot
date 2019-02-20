@@ -21,19 +21,22 @@ int right_pin = 0;
 int left_val = 0;
 int center_val = 0;
 int right_val = 0;
-int thresh = 160;
+int thresh = 165;
+float position = 0;
+
+/*
 int setpoint = 500;
-float position;
 float error = 0;
 float lastError = 0;
 float kp = 0.02;
 float kd = 0.0;
+
 float motorSpeed = 0;
 int rightBaseSpeed = 80;
 int leftBaseSpeed = 80;
 int rightMotorSpeed =0;
 int leftMotorSpeed = 0;
-
+*/
 int checkPosition(int val)
 {
   int res = 0;
@@ -53,12 +56,6 @@ void printSensorValues()
   Serial.println(right_val);
 }
 
-void printMotorSpeeds()
-{
-  Serial.print(leftMotorSpeed);
-  Serial.print(",");
-  Serial.println(rightMotorSpeed);
-}
 
 /*
 * Function Name : lineSensor
@@ -76,7 +73,7 @@ void lineSensor()
   center_val = checkPosition(center_val);
   right_val = checkPosition(right_val);
   
-  //printSensorValues();
+  printSensorValues();
   
   if(left_val && center_val && right_val)
   {
@@ -85,13 +82,15 @@ void lineSensor()
   else
   {
     position = (0*left_val + 500*center_val + 1000*right_val)/(left_val + center_val + right_val);
-    //Serial.println(position);
+    Serial.println(position);
+    /*
     error = setpoint - position;
     motorSpeed = kp * error + kd * (error - lastError);
     lastError = error;
     rightMotorSpeed = rightBaseSpeed + motorSpeed;
     leftMotorSpeed = leftBaseSpeed - motorSpeed;
     printMotorSpeeds();
+    */
   }
 }
 
