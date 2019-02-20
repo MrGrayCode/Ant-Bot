@@ -9,8 +9,9 @@
                      qah_dict -> multilevel dictionary for storing requirements of queen anthill
                      trash_rah_dict -> dictionary for storing regular anthill trash service requirements
                      trash_qah -> trash service requirements of queen anthill
+                     supply_loc -> multilevel dictionary to store supply locations in Shrub region
 '''
-from utils import Camera
+#from utils import Camera
 
 def multidict(*args):
     if len(args) > 1:
@@ -42,6 +43,7 @@ qah_dict = multidict(['red', 'blue', 'green'], ['count', 'service_regions'], 0)
 rah_dict = multidict(['red', 'blue', 'green'], ['total','ah0', 'ah1', 'ah2', 'ah3'], ['count', 'service_regions'], 0)
 trash_rah_dict = {}
 trash_qah = 0
+supply_loc = multidict(['red', 'blue', 'green'], ['pos1', 'pos2'], (0,0))
 
 for id in ids:
     #Queen Anthill
@@ -84,7 +86,15 @@ for id in ids:
         #store trash service requirements of regual ranthills
         trash_rah_dict[getAH(id[1:3])] = id[7]
 
+#sample supply location info -> BRG RB_
+supply_loc['red']['pos1'] = (3,1)
+supply_loc['red']['pos2'] = (9,1)
+supply_loc['blue']['pos1'] = (1,1)
+supply_loc['blue']['pos2'] = (11,1)
+supply_loc['green']['pos1'] = (5,1)
+
 print(qah_dict)
 print(rah_dict)
 print(trash_rah_dict)
 print(trash_qah)
+print(supply_loc)
