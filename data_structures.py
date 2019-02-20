@@ -39,6 +39,7 @@ def getSupply(s):
 #get Aruco IDs in binary format
 #ids = cam.IDs
 ids = ['00100101','01011010','11101101','00000010'] #example
+queen = 0
 qah_dict = multidict(['red', 'blue', 'green'], ['count', 'service_regions'], 0)
 rah_dict = multidict(['red', 'blue', 'green'], ['total','ah0', 'ah1', 'ah2', 'ah3'], ['count', 'service_regions'], 0)
 trash_rah_dict = {}
@@ -48,6 +49,7 @@ supply_loc = multidict(['red', 'blue', 'green'], ['pos1', 'pos2'], (0,0))
 for id in ids:
     #Queen Anthill
     if id[0]=='1':
+        queen = 1
         qah_num = getAH(id[1:3])
         #store service region 2 requirements
         if getSupply(id[3:5]):
@@ -93,8 +95,10 @@ supply_loc['blue']['pos1'] = (1,1)
 supply_loc['blue']['pos2'] = (11,1)
 supply_loc['green']['pos1'] = (5,1)
 
+'''
 print(qah_dict)
 print(rah_dict)
 print(trash_rah_dict)
 print(trash_qah)
 print(supply_loc)
+'''

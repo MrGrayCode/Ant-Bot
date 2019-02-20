@@ -6,14 +6,14 @@
 * Functions : forward(int),backward(int),left(int),right(int),stop()
 * Global Variables : NONE
 '''
-import RPi.GPIO as GPIO
+#import RPi.GPIO as GPIO
 
 class Bot:
     def __init__(self):
         GPIO.setwarnings(False)
         GPIO.setmode(GPIO.BOARD)
         #motor_pins stores the values of the pins to interface the motor in the order - 1A 1B 1E 2A 2B 2E
-        self.motor_pins = [36,38,40,33,35,37] 
+        self.motor_pins = [36,38,40,33,35,37]
         for motor_pin in self.motor_pins:
             GPIO.setup(motor_pin,GPIO.OUT)
             GPIO.output(motor_pin,GPIO.LOW)
@@ -38,7 +38,7 @@ class Bot:
         GPIO.output(self.motor_pins[1],GPIO.HIGH)
         GPIO.output(self.motor_pins[3],GPIO.LOW)
         GPIO.output(self.motor_pins[4],GPIO.HIGH)
-    
+
     '''
     * Function Name : backward
     * Input : left_dc (optional) -> the duty cycle of left motor's PWM output
