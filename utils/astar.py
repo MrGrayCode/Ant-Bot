@@ -210,7 +210,7 @@ class AStarGraph(object):
 if __name__=="__main__":
 	graph = AStarGraph()
 	src = (7,1)
-	dest = (11,11)
+	dest = (5,1)
 	initial_direction = "U"	#directed upwards on the grid
 	result, cost = AStarGraph.AStarSearch(src, dest, graph)
 	current, directions, moves = AStarGraph.get_directions(result, initial_direction, graph)

@@ -18,7 +18,7 @@ def queen(ids):
             return id
     return 0
 
-def service(id, sr, getSupply, actions):
+def service(id, sr, getSupply, actions, sr_num):
     if sr != '00':
         s_locs = getSupply[sr]
         d = 1000
@@ -35,7 +35,7 @@ def service(id, sr, getSupply, actions):
         getSupply[sr].remove(s_loc)
 
         #deposit supply in the required service region
-        actions.append(getLoc[id[1:3]]['sr2'])
+        actions.append(getLoc[id[1:3]][sr_num])
         actions.append("DEPOSIT SUPPLY")
 
 def trash_service(id, trash_locations, actions):
@@ -71,7 +71,7 @@ def trash_service(id, trash_locations, actions):
         actions.append("DEPOSIT TRASH")
 
 def getPath(ids, getSupply):
-    actions = []
+    actions = ["F"]
 
     #go to each supply location in shrub region and scan it
     supply_locations = [(5,1), (3,1), (1,1), (9,1), (11,1), (13,1)] #coordinates of supply locations
@@ -89,9 +89,9 @@ def getPath(ids, getSupply):
         #process trash service requirements
         trash_service(qid, trash_locations, actions)
         #process SR2 for supply requirements
-        service(qid, qid[3:5], getSupply, actions)
+        service(qid, qid[3:5], getSupply, actions, 'sr2')
         #process SR1 for supply requirements
-        service(qid, qid[5:7], getSupply, actions)
+        service(qid, qid[5:7], getSupply, actions, 'sr1')
 
     #service other anthills
     for id in ids:
@@ -99,9 +99,13 @@ def getPath(ids, getSupply):
             #process trash service requirements
             trash_service(id, trash_locations, actions)
             #process SR2 for supply requirements
-            service(id, id[3:5], getSupply, actions)
+            service(id, id[3:5], getSupply, actions, 'sr2')
             #process SR1 for supply requirements
-            service(id, id[5:7], getSupply, actions)
+            service(id, id[5:7], getSupply, actions, 'sr1')
+
+    #return to start position
+    actions.append((7,1))
+    actions.append("BUZZER")
 
     #return final list of actions to be done
     return actions
@@ -121,11 +125,7 @@ trash_locations = [(13,11), (3,5)]
 src = (7,1) #initialize with start node location
 current_direction = "U"	#directed upwards on the grid
 actions = getPath(ids, getSupply)
-
-'''
-for i in range(0, len(actions)-1, 2):
-    print(actions[i], actions[i+1])
-'''
+print(actions)
 
 #get directions for visiting all locations in the list
 path_actions = []
@@ -134,13 +134,13 @@ for act in actions:
         dest = act
         result, cost = AStarGraph.AStarSearch(src, dest, graph)
         current_direction, directions, moves = AStarGraph.get_directions(result, current_direction, graph)
-        '''
+        print(src, "to", dest)
         print ("Route: ", result)
         print ("Cost: ", cost)
         print("Directions: ", directions)
         print("Moves: ", moves)
         print("Currently facing: ", current_direction)
-        '''
+        print("")
         path_actions += directions
         src = act
     else:
