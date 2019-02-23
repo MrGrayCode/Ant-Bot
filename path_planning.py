@@ -51,8 +51,7 @@ def trash_service(id, trash_locations, actions):
                 trash_loc = getLoc[id[1:3]]['sr2']
             #Case#3 & #4 (no service, trash) & (trash, no service)
             else:
-                #go to sr1 and scan for trash
-                actions.append(getLoc[id[1:3]]['sr1'])
+                #scan for trash on left (sr1)
                 actions.append("SCAN TRASH")
                 #if trash found in SR1
                 if getLoc[id[1:3]]['sr1'] in trash_locations:
@@ -71,13 +70,7 @@ def trash_service(id, trash_locations, actions):
         actions.append("DEPOSIT TRASH")
 
 def getPath(ids, getSupply):
-    actions = ["F"]
-
-    #go to each supply location in shrub region and scan it
-    supply_locations = [(5,1), (3,1), (1,1), (9,1), (11,1), (13,1)] #coordinates of supply locations
-    for sl in supply_locations:
-        actions.append(sl)
-        actions.append("SCAN SUPPLY")
+    actions = []
 
     #go to central node and read all the ArUco markers
     actions.append((7,8)) #add the coordinates of central node
@@ -112,28 +105,42 @@ def getPath(ids, getSupply):
 
 #get Aruco IDs in binary format
 #ids = cam.IDs
+getLoc = {  '00': {'sr1': (1,11),  'sr2': (3,11)},
+'01': {'sr1': (11,11), 'sr2': (13,11)},
+'10': {'sr1': (13,5),  'sr2': (11,5)},
+'11': {'sr1': (3,5),   'sr2': (1,5)}}
+
+#####################SAMPLE CONFIGURATION###################
 ids = ['00100001','01011010','11101001','00000100'] #example
 getSupply = {'01': [(3,1), (9,1)],  #red -> Honey Dew
              '10': [(5,1)],         #green -> Leaves
              '11': [(1,1), (11,1)]} #blue -> Wood
-getLoc = {  '00': {'sr1': (1,11),  'sr2': (3,11)},
-            '01': {'sr1': (11,11), 'sr2': (13,11)},
-            '10': {'sr1': (13,5),  'sr2': (11,5)},
-            '11': {'sr1': (3,5),   'sr2': (1,5)}}
 trash_locations = [(13,11), (3,5)]
+#############################################################
 
-src = (7,1) #initialize with start node location
+#scan all supplies in the shrub region
+path_actions = []
+#go to each supply location in left shrub region and scan it (camera on left, so no turns)
+path_actions = ["F", "L", "F", "SCAN", "F", "SCAN", "F", "SCAN"]
+#turn around and go to the right end of shrub region
+path_actions = path_actions + ["B"] + ["F"]*6
+#turn and scan supplies in shrub region from right to left
+path_actions += ["B", "SCAN", "F", "SCAN", "F", "SCAN", "F"]
+#turn right (current pos -> (7,3))
+path_actions += ["R"]
+
+src = (7,3) #initialize location
 current_direction = "U"	#directed upwards on the grid
 actions = getPath(ids, getSupply)
-print(actions)
+#print(actions)
 
-#get directions for visiting all locations in the list
-path_actions = []
+path_actions2 = []
 for act in actions:
     if len(act)==2: #check for coordinates
         dest = act
         result, cost = AStarGraph.AStarSearch(src, dest, graph)
         current_direction, directions, moves = AStarGraph.get_directions(result, current_direction, graph)
+        '''
         print(src, "to", dest)
         print ("Route: ", result)
         print ("Cost: ", cost)
@@ -141,12 +148,44 @@ for act in actions:
         print("Moves: ", moves)
         print("Currently facing: ", current_direction)
         print("")
-        path_actions += directions
+        '''
+        path_actions2 += directions
         src = act
     else:
-        path_actions.append(act)
+        path_actions2.append(act)
+'''
+i = 0
+while i<len(path_actions2):
+    #after every pick trash/supply or deposit supply, replace nect 2 actions
+    #with the action before the pick/place action
+    if path_actions2[i]=="PICK TRASH" or path_actions2[i]=="PICK SUPPLY" or path_actions2[i]=="DEPOSIT SUPPLY":
+        path_actions2[i+1] = "X"
+        path_actions2[i+2] = path_actions2[i-1]
+    i += 1
+#path_actions2 = list(filter(lambda a:a!="X", path_actions2))
+'''
 
+for i in path_actions2:
+    print(i, end=", ")
+    if len(i)>1:
+        print("")
+
+for i in range(len(path_actions2)-1):
+    path_actions.append(path_actions2[i])
+    #check for turns except for when picking and placing supplies
+    if len(path_actions2[i])==1:
+        if path_actions2[i]!="F" and len(path_actions2[i+1])==1:
+            #turn and move forward
+            path_actions.append("F")
+        else:
+            #to deposit trash, move forward
+            if path_actions2[i+1]=="DEPOSIT TRASH":
+                path_actions.append("F")
+
+path_actions.append(path_actions[len(path_actions)-1])
+'''
 for i in path_actions:
     print(i, end=", ")
     if len(i)>1:
         print("")
+'''

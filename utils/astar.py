@@ -157,7 +157,7 @@ class AStarGraph(object):
 			  are added to the list
 	* Example Call : get_directions(path, initial_direction)
 	'''
-	def get_directions(path, initial_direction, graph):
+	def get_directions(path, initial_direction, final_direction, graph):
 		#dictionary to get Directions
 		dir = {	"UR": "R", "LU": "R", "DL": "R", "RD": "R",		#all right turns
 				"UL": "L", "LD": "L", "DR": "L", "RU": "L",		#all left turns
@@ -194,26 +194,31 @@ class AStarGraph(object):
 			#bot takes a left or right turn
 			if current_direction+move in dir.keys():
 				directions.append(dir[current_direction+move])
+				directions.append("F")
 				moves.append(current_direction+move)
 				current_direction = move
 			else:
-				#no left or right turn, but node encountered
-				if count>2:
+				#no left or right turn, but node or start position encountered
+				if count>2 or loc1==(7,1):
 					directions.append("F")
 					moves.append(current_direction+move)
 			#update coordinates
 			loc1 = loc2
 			i += 1
-		return current_direction, directions, moves
+		if current_direction+final_direction in dir.keys():
+			directions.append(dir[current_direction+final_direction])
+			moves.append(current_direction+final_direction)
+		return final_direction, directions, moves
 
 #driver program to test the code
 if __name__=="__main__":
 	graph = AStarGraph()
 	src = (7,1)
-	dest = (5,1)
+	dest = (12,11)
 	initial_direction = "U"	#directed upwards on the grid
+	final_direction = "R"
 	result, cost = AStarGraph.AStarSearch(src, dest, graph)
-	current, directions, moves = AStarGraph.get_directions(result, initial_direction, graph)
+	current, directions, moves = AStarGraph.get_directions(result, initial_direction, final_direction, graph)
 	print ("Route: ", result)
 	print ("Cost: ", cost)
 	print("Directions: ", directions)
