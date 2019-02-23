@@ -6,14 +6,14 @@
 * Functions : forward(int),backward(int),left(int),right(int),stop()
 * Global Variables : NONE
 '''
-#import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO
 
 class Bot:
     def __init__(self):
         GPIO.setwarnings(False)
         GPIO.setmode(GPIO.BOARD)
         #motor_pins stores the values of the pins to interface the motor in the order - 1A 1B 1E 2A 2B 2E
-        self.motor_pins = [36,38,40,33,35,37]
+        self.motor_pins = [29,31,40,33,35,37]
         for motor_pin in self.motor_pins:
             GPIO.setup(motor_pin,GPIO.OUT)
             GPIO.output(motor_pin,GPIO.LOW)
@@ -103,8 +103,10 @@ class Bot:
         self.right_motor.stop()
         GPIO.output(self.motor_pins[2],GPIO.LOW)
         GPIO.output(self.motor_pins[5],GPIO.LOW)
+        GPIO.cleanup()
 
 if __name__ == "__main__":
     bot = Bot()
     while True:
-        bot.forward(10,50)
+        bot.left(90,90)
+    bot.stop()

@@ -21,8 +21,8 @@ int right_pin = 0;
 int left_val = 0;
 int center_val = 0;
 int right_val = 0;
-int thresh = 165;
-float position = 0;
+int thresh = 160;
+int position = 0;
 
 /*
 int setpoint = 500;
@@ -73,7 +73,7 @@ void lineSensor()
   center_val = checkPosition(center_val);
   right_val = checkPosition(right_val);
   
-  printSensorValues();
+  //printSensorValues();
   
   if(left_val && center_val && right_val)
   {
@@ -81,7 +81,7 @@ void lineSensor()
   }
   else
   {
-    position = (0*left_val + 500*center_val + 1000*right_val)/(left_val + center_val + right_val);
+    position = (0*left_val + 50*center_val + 100*right_val)/(left_val + center_val + right_val);
     Serial.println(position);
     /*
     error = setpoint - position;
@@ -102,5 +102,5 @@ void setup()
 void loop() 
 {
   lineSensor();
-  delay(100);
+  delay(50);
 }
