@@ -31,8 +31,6 @@ class Camera:
         #range for yellow color
         self.lower_yellow = np.array([10,100,100])
         self.upper_yellow = np.array([30,255,255])
-        
-        
 
     '''
     * Function Name : detectAruco
@@ -102,7 +100,7 @@ class Camera:
                 #self.IDs.append(bin(ID)[2:]) #store ID in binary format
                 print("ID Detected: {}".format(ID))
         vs.stop()
-        
+
     def getColor(self):
         vs = VideoStream(usePiCamera = True).start()
         time.sleep(0.5)
@@ -116,12 +114,12 @@ class Camera:
             mask_blue = cv2.inRange(hsv,self.lower_blue,self.upper_blue)
             mask_green = cv2.inRange(hsv,self.lower_green,self.upper_green)
             mask_yellow = cv2.inRange(hsv,self.lower_yellow,self.upper_yellow)
-            
+
             colors['r'] = cv2.countNonZero(mask_red)
             colors['b'] = cv2.countNonZero(mask_blue)
             colors['g'] = cv2.countNonZero(mask_green)
             colors['y'] = cv2.countNonZero(mask_yellow)
-            
+
             #res = cv2.bitwise_and(frame,frame,mask = mask_yellow)
             #cv2.imshow("Res",res)
             #cv2.waitKey(10)
@@ -131,8 +129,8 @@ class Camera:
             if colors[color] > 5000:
                 return color
         return 'x'
-            
-		
+
+
 if __name__ == "__main__":
     cam = Camera()
     res = cam.getColor()

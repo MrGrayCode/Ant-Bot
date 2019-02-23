@@ -8,7 +8,6 @@
 '''
 
 from utils import AStarGraph
-#from utils import Camera
 
 graph = AStarGraph()
 src = (7,3) #initialize location
@@ -28,8 +27,35 @@ def getMovesTo(dest, final_direction):
     src = dest
     return directions
 
-def service(id, sr, sr_num):
-    global getSupply, path_actions
+def service(ids, getSupply, trash_locations):
+    path_actions = []
+    #Service queen anthill if it exists
+    qid = queen(ids)
+    if qid:
+        #process trash service requirements
+        trash_service(qid, trash_locations, path_actions)
+        #process SR2 for supply requirements
+        supply_service(qid, qid[3:5], 'sr2', getSupply, path_actions)
+        #process SR1 for supply requirements
+        supply_service(qid, qid[5:7], 'sr1', getSupply, path_actions)
+
+    #service other anthills
+    for id in ids:
+        if id != qid:
+            #process trash service requirements
+            trash_service(id, trash_locations, path_actions)
+            #process SR2 for supply requirements
+            supply_service(id, id[3:5], 'sr2', getSupply, path_actions)
+            #process SR1 for supply requirements
+            supply_service(id, id[5:7], 'sr1', getSupply, path_actions)
+
+    #return to start position and turn on buzzer
+    path_actions += getMovesTo((7,1), "D")
+    path_actions.append("BUZZER")
+
+    return path_actions
+
+def supply_service(id, sr, sr_num, getSupply, path_actions):
     if sr != '00':
         s_locs = getSupply[sr]
         d = 1000
@@ -50,8 +76,8 @@ def service(id, sr, sr_num):
         path_actions += getMovesTo(getLoc[id[1:3]]['ah'], dir)
         path_actions.append("DEPOSIT SUPPLY")
 
-def trash_service(id):
-    global trash_locations, path_actions, current_direction
+def trash_service(id, trash_locations, path_actions):
+    global current_direction
     #if AH has trash service requirement
     if id[7] != '0':
         ah_loc = getLoc[id[1:3]]['ah']
@@ -90,7 +116,6 @@ def trash_service(id):
         path_actions.append("DEPOSIT TRASH")
 
 #get Aruco IDs in binary format
-#ids = cam.IDs
 getLoc = {  '00': {'sr1': (1,11),  'sr2': (3,11), 'ah': (2,11)},
             '01': {'sr1': (11,11), 'sr2': (13,11), 'ah': (12,11)},
             '10': {'sr1': (13,5),  'sr2': (11,5), 'ah': (12,5)},
@@ -106,6 +131,7 @@ getSupply = {'01': [(3,3), (9,3)],  #red -> Honey Dew
 trash_locations = [(13,11), (3,5)]
 #############################################################
 
+##################To main.py#################################
 #scan all supplies in the shrub region
 path_actions = []
 #go to each supply location in left shrub region and scan it (camera on left, so no turns)
@@ -121,32 +147,11 @@ path_actions += ["R"]
 path_actions += getMovesTo((7,8),"U") #add the coordinates of central node
 path_actions.append("READ ARUCO")
 
-#Service queen anthill if it exists
-qid = queen(ids)
-if qid:
-    #process trash service requirements
-    trash_service(qid)
-    #process SR2 for supply requirements
-    service(qid, qid[3:5], 'sr2')
-    #process SR1 for supply requirements
-    service(qid, qid[5:7], 'sr1')
-
-#service other anthills
-for id in ids:
-    if id != qid:
-        #process trash service requirements
-        trash_service(id)
-        #process SR2 for supply requirements
-        service(id, id[3:5], 'sr2')
-        #process SR1 for supply requirements
-        service(id, id[5:7], 'sr1')
-
-#return to start position
-path_actions += getMovesTo((7,1), "D")
-path_actions.append("BUZZER")
+#do all servicing, return to start, buzzer on
+path_actions2 = service(ids, getSupply, trash_locations)
 
 #display actions
-for i in path_actions:
+for i in path_actions + path_actions2:
     print(i, end=", ")
     if len(i)>1:
         print("")

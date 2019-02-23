@@ -6,7 +6,7 @@
 * Functions : forward(int),backward(int),left(int),right(int),stop()
 * Global Variables : NONE
 '''
-import RPi.GPIO as GPIO
+#import RPi.GPIO as GPIO
 
 class Bot:
     def __init__(self):
