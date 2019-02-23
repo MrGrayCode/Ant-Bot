@@ -102,5 +102,5 @@ void setup()
 void loop() 
 {
   lineSensor();
-  delay(50);
+  delay(10);
 }
