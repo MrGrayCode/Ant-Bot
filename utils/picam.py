@@ -89,15 +89,6 @@ class Camera:
                 print("ID Detected: {}".format(ID))
         vs.stop()
 
-        #storing data in  csv file
-        with open("eYRC#AB#117.csv", w) as f:
-            writer = csv.writer(f)
-            #the SIMS are detected in the order 1,2,3,0 so store them in the sorted order
-            writer.writerow(["SIM 0",ids[3]])
-            writer.writerow(["SIM 1",ids[0]])
-            writer.writerow(["SIM 2",ids[1]])
-            writer.writerow(["SIM 3",ids[2]])
-
 if __name__ == "__main__":
     cam = Camera()
     cam.getArucoID()

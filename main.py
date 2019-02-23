@@ -1,4 +1,6 @@
 from utils import Bot
+from utils import Camera
+from threading import Thread
 import serial
 import time
 
@@ -18,15 +20,38 @@ ser = serial.Serial("/dev/ttyUSB0", 9600)
 #time.sleep(0.5)
 serial_output = 1
 
+def readSerialOutput():
+    serial_output = str(ser.readline())
+    serial_output = output[2:-5]
+    return serial_output
+
+def turnRightPath():
+    serial_output = readSerialOutput()
+    while serial_output>=-1 and serial_output <=50:
+        bot.right(40,40)
+        serial_output = readSerialOutput()
+        try:
+            serial_output = int(serial_output)
+        except Exception as e:
+            print(e)
+
+    while serial_output>50:
+        bot.right(40,40)
+        serial_output = readSerialOutput()
+        try:
+            serial_output = int(serial_output)
+        except Exception as e:
+            print(e) 
+
 prev_reading = ''
 node_count = 0
 
 bot = Bot()
 #bot.forward(50,50)
-'''
+
+#count 2 nodes to reach the center node
 while node_count < 2:
-    serial_output = str(ser.readline())
-    serial_output = serial_output[2:-5]
+    serial_output = readSerialOutput()
     #print(serial_output)
     try:
         position = int(serial_output)
@@ -45,8 +70,18 @@ while node_count < 2:
         #else:
             #print(e)
     prev_reading = serial_output
-'''
 
+cam = Camera()
+
+cameraThread = Thread(target=cam.getArucoID)
+motionThread = Thread(target=bot.right,args=(20,20))
+motionThread.start()
+cameraThread.start()
+
+cameraThread.join()
+motionThread.join()
+
+'''
 serial_output = str(ser.readline())
 serial_output = int(serial_output[2:-5])
 
@@ -65,5 +100,5 @@ while serial_output>50:
         serial_output = int(serial_output[2:-5])
     except Exception as e:
         print(e)
-
+'''
 bot.stop()
