@@ -1,6 +1,6 @@
 '''
 * Team ID : 117
-* Author List : Ebey Abraham, Akshatha Nayak
+* Author List : Ebey Abraham, Akshatha Nayak, Anandhu Udayakumar
 * Filename : picam.py
 * Theme : Antbot
 * Functions : detectAruco(img), markAruco(img,aruco_list), getArucoID(), getArucoBits()
@@ -19,6 +19,20 @@ import numpy as np
 class Camera:
     def __init__(self):
         self.IDs = []
+        #range for red color
+        self.lower_red = np.array([160,100,0])
+        self.upper_red = np.array([180,255,255])
+        #range for blue color
+        self.lower_blue = np.array([100,100,0])
+        self.upper_blue = np.array([140,255,255])
+        #range for green color
+        self.lower_green = np.array([40,100,0])
+        self.upper_green = np.array([80,255,255])
+        #range for yellow color
+        self.lower_yellow = np.array([10,100,100])
+        self.upper_yellow = np.array([30,255,255])
+        
+        
 
     '''
     * Function Name : detectAruco
@@ -72,7 +86,8 @@ class Camera:
     '''
     def getArucoID(self):
         vs = VideoStream(usePiCamera = True).start()
-        time.sleep(1)
+        time.sleep(0.5)
+        ids = []
         while len(ids) < 4:
             ID = 0 #stores the detected ID
             frame = vs.read()
@@ -81,14 +96,44 @@ class Camera:
                 foundID = True
                 ID = list(aruco_list.keys())
                 ID = ID[0]
-                frame = self.markAruco(frame,aruco_list)
             #check that the detected ID is not repeated and add to the list of ids
             if ID > 0 and ID not in ids:
                 ids.append(ID)
-                IDs.append(bin(ID)[2:]) #store ID in binary format
+                #self.IDs.append(bin(ID)[2:]) #store ID in binary format
                 print("ID Detected: {}".format(ID))
         vs.stop()
-
+        
+    def getColor(self):
+        vs = VideoStream(usePiCamera = True).start()
+        time.sleep(0.5)
+        count = 3
+        colors = {'r':0,'b':0,'g':0,'y':0}
+        while count:
+            count -= 1
+            frame = vs.read()
+            hsv = cv2.cvtColor(frame,cv2.COLOR_BGR2HSV)
+            mask_red = cv2.inRange(hsv,self.lower_red,self.upper_red)
+            mask_blue = cv2.inRange(hsv,self.lower_blue,self.upper_blue)
+            mask_green = cv2.inRange(hsv,self.lower_green,self.upper_green)
+            mask_yellow = cv2.inRange(hsv,self.lower_yellow,self.upper_yellow)
+            
+            colors['r'] = cv2.countNonZero(mask_red)
+            colors['b'] = cv2.countNonZero(mask_blue)
+            colors['g'] = cv2.countNonZero(mask_green)
+            colors['y'] = cv2.countNonZero(mask_yellow)
+            
+            #res = cv2.bitwise_and(frame,frame,mask = mask_yellow)
+            #cv2.imshow("Res",res)
+            #cv2.waitKey(10)
+        vs.stop()
+        print(colors)
+        for color in colors:
+            if colors[color] > 5000:
+                return color
+        return 'x'
+            
+		
 if __name__ == "__main__":
     cam = Camera()
-    cam.getArucoID()
+    res = cam.getColor()
+    print(res)

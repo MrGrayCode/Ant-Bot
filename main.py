@@ -22,7 +22,7 @@ serial_output = 1
 
 def readSerialOutput():
     serial_output = str(ser.readline())
-    serial_output = output[2:-5]
+    serial_output = serial_output[2:-5]
     return serial_output
 
 def turnRightPath():
@@ -75,8 +75,8 @@ cam = Camera()
 
 cameraThread = Thread(target=cam.getArucoID)
 motionThread = Thread(target=bot.right,args=(20,20))
-motionThread.start()
 cameraThread.start()
+motionThread.start()
 
 cameraThread.join()
 motionThread.join()
